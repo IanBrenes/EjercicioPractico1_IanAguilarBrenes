@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+    <head>
+        <title>Medicamentos - Farmacia San José</title>
+    </head>
+    <body>
+        <main>
+            <div class="container my-5">
+                <!-- Header de la página -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1 class="text-primary">
+                            <i class="fas fa-pills me-2"></i>Medicamentos Disponibles
+                        </h1>
+                        <p class="text-muted">Gestiona y visualiza todos los medicamentos de la farmacia</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-primary-custom btn-lg" data-bs-toggle="modal" data-bs-target="#modalMedicamento">
+                            <i class="fas fa-plus me-2"></i>Agregar Medicamento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="buscarMedicamento" placeholder="Buscar medicamento...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="filtroCategoria">
+                            <option value="">Todas las categorías</option>
+                            <option th:each="categoria : ${categorias}" 
+                                    th:value="${categoria.id}" 
+                                    th:text="${categoria.nombre}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Lista de Medicamentos -->
+                <div class="row" id="listaMedicamentos">
+                    <div class="col-lg-4 col-md-6 mb-4" th:each="medicamento : ${medicamentos}">
+                        <div class="card card-product h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary" th:text="${medicamento.nombre}">Paracetamol</h5>
+                                    <span class="badge bg-secondary" th:text="${medicamento.categoria != null ? medicamento.categoria.nombre : 'Sin categoría'}">Analgésicos</span>
+                                </div>
+
+                                <p class="card-text text-muted mb-3" th:text="${medicamento.descripcion}">
+                                    Analgésico y antipirético para aliviar dolores leves y moderados
+                                </p>
+
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong class="text-success">
+                                                <i class="fas fa-dollar-sign"></i>
+                                                <span th:text="${#numbers.formatDecimal(medicamento.precio, 1, 2)}">2.50</span>
+                                            </strong>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <span class="badge" 
+                                                  th:classappend="${medicamento.stock > 10 ? 'bg-success' : medicamento.stock > 0 ? 'bg-warning' : 'bg-danger'}">
+                                                <i class="fas fa-boxes me-1"></i>
+                                                <span th:text="${medicamento.stock}">100</span> unidades
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary btn-sm" 
+                                            th:onclick="'editarMedicamento(' + ${medicamento.id} + ')'">
+                                        <i class="fas fa-edit me-1"></i>Editar
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" 
+                                            th:onclick="'eliminarMedicamento(' + ${medicamento.id} + ', \'' + ${medicamento.nombre} + '\')'">
+                                        <i class="fas fa-trash me-1"></i>Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensaje cuando no hay medicamentos -->
+                <div class="row" th:if="${#lists.isEmpty(medicamentos)}">
+                    <div class="col-12 text-center">
+                        <div class="card">
+                            <div class="card-body py-5">
+                                <i class="fas fa-pills fa-4x text-muted mb-3"></i>
+                                <h3 class="text-muted">No hay medicamentos registrados</h3>
+                                <p class="text-muted">Agrega el primer medicamento para comenzar</p>
+                                <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#modalMedicamento">
+                                    <i class="fas fa-plus me-2"></i>Agregar Medicamento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para Agregar/Editar Medicamento -->
+            <div class="modal fade" id="modalMedicamento" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <form th:action="@{/medicamentos/guardar}" method="post" id="formMedicamento">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tituloModal">
+                                    <i class="fas fa-pills me-2"></i>Agregar Medicamento
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" id="medicamentoId" name="id">
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="nombre" class="form-label">Nombre del Medicamento *</label>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="categoria" class="form-label">Categoría *</label>
+                                        <select class="form-select" id="categoria" name="idCategoria" required>
+                                            <option value="">Seleccionar categoría</option>
+                                            <option th:each="categoria : ${categorias}" 
+                                                    th:value="${categoria.id}" 
+                                                    th:text="${categoria.nombre}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="descripcion" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3" 
+                                              placeholder="Describe el medicamento, sus usos y características..."></textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="precio" class="form-label">Precio ($) *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="precio" name="precio" 
+                                                   step="0.01" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="stock" class="form-label">Cantidad en Stock *</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="stock" name="stock" 
+                                                   min="0" required>
+                                            <span class="input-group-text">unidades</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i>Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary-custom">
+                                    <i class="fas fa-save me-1"></i>Guardar Medicamento
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Función para buscar medicamentos
+                document.getElementById('buscarMedicamento').addEventListener('input', function() {
+                    const termino = this.value.toLowerCase();
+                    const medicamentos = document.querySelectorAll('#listaMedicamentos .col-lg-4');
+
+                    medicamentos.forEach(function (medicamento) {
+                        const nombre = medicamento.querySelector('.card-title').textContent.toLowerCase();
+                        const descripcion = medicamento.querySelector('.card-text').textContent.toLowerCase();
+
+                        if (nombre.includes(termino) || descripcion.includes(termino)) {
+                            medicamento.style.display = 'block';
+                        } else {
+                            medicamento.style.display = 'none';
+                        }
+                    });
+                });
+
+                // Función para editar medicamento
+                function editarMedicamento(id) {
+                    // Aquí harías una petición AJAX para obtener los datos del medicamento
+                    // Por ahora, solo cambio el título del modal
+                    document.getElementById('tituloModal').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Medicamento';
+                    document.getElementById('medicamentoId').value = id;
+
+                    // Mostrar el modal
+                    const modal = new bootstrap.Modal(document.getElementById('modalMedicamento'));
+                    modal.show();
+                }
+
+                // Función para eliminar medicamento
+                function eliminarMedicamento(id, nombre) {
+                    if (confirm('¿Estás seguro de que deseas eliminar el medicamento "' + nombre + '"?')) {
+                        // Crear un formulario para enviar la petición DELETE
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/medicamentos/eliminar/' + id;
+
+                        const hiddenField = document.createElement('input');
+                        hiddenField.type = 'hidden';
+                        hiddenField.name = '_method';
+                        hiddenField.value = 'DELETE';
+
+                        form.appendChild(hiddenField);
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                }
+
+                // Limpiar formulario al cerrar modal
+                document.getElementById('modalMedicamento').addEventListener('hidden.bs.modal', function () {
+                    document.getElementById('formMedicamento').reset();
+                    document.getElementById('medicamentoId').value = '';
+                    document.getElementById('tituloModal').innerHTML = '<i class="fas fa-pills me-2"></i>Agregar Medicamento';
+                });
+            </script>
+        </main>
+    </body>
+</html>

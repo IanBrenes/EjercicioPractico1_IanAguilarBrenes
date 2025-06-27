@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+    <head>
+        <title>Sugerencias y Quejas - Farmacia San José</title>
+    </head>
+    <body>
+        <main>
+            <div class="container my-5">
+                <!-- Header de la página -->
+                <div class="row mb-5">
+                    <div class="col-12 text-center">
+                        <h1 class="text-primary mb-3">
+                            <i class="fas fa-comment-alt me-2"></i>Sugerencias y Quejas
+                        </h1>
+                        <p class="lead text-muted">
+                            Tu opinión es muy importante para nosotros. Comparte tus comentarios, sugerencias o quejas 
+                            para ayudarnos a mejorar nuestros servicios.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Formulario de Sugerencias -->
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-edit me-2"></i>Enviar Sugerencia o Queja
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <!-- Mensaje de éxito -->
+                                <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${mensaje}">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span th:text="${mensaje}">¡Gracias por tu mensaje! Lo hemos recibido correctamente.</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+
+                                <!-- Mensaje de error -->
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <span th:text="${error}">Ha ocurrido un error al enviar tu mensaje.</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+
+                                <form th:action="@{/sugerencias/enviar}" method="post">
+                                    <!-- Información Personal -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-primary border-bottom pb-2 mb-3">
+                                                <i class="fas fa-user me-2"></i>Información de Contacto
+                                            </h5>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nombre" class="form-label">Nombre Completo *</label>
+                                            <input type="text" class="form-control" id="nombre" name="nombre" required
+                                                   placeholder="Ingresa tu nombre completo">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Correo Electrónico *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required
+                                                   placeholder="ejemplo@correo.com">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="telefono" class="form-label">Teléfono</label>
+                                            <input type="tel" class="form-control" id="telefono" name="telefono"
+                                                   placeholder="+506 8888-8888">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tipoMensaje" class="form-label">Tipo de Mensaje *</label>
+                                            <select class="form-select" id="tipoMensaje" name="tipoMensaje" required>
+                                                <option value="">Selecciona una opción</option>
+                                                <option value="sugerencia">Sugerencia</option>
+                                                <option value="queja">Queja</option>
+                                                <option value="consulta">Consulta</option>
+                                                <option value="felicitacion">Felicitación</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mensaje -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-primary border-bottom pb-2 mb-3">
+                                                <i class="fas fa-comment me-2"></i>Tu Mensaje
+                                            </h5>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="asunto" class="form-label">Asunto *</label>
+                                            <input type="text" class="form-control" id="asunto" name="asunto" required
+                                                   placeholder="Breve descripción del tema">
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="mensaje" class="form-label">Mensaje *</label>
+                                            <textarea class="form-control" id="mensaje" name="mensaje" rows="6" required
+                                                      placeholder="Describe detalladamente tu sugerencia, queja o consulta..."></textarea>
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Mínimo 10 caracteres. Sé específico para poder ayudarte mejor.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Calificación del Servicio -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-primary border-bottom pb-2 mb-3">
+                                                <i class="fas fa-star me-2"></i>Calificación del Servicio
+                                            </h5>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">¿Cómo calificarías nuestro servicio?</label>
+                                            <div class="rating-container">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="calificacion" id="cal1" value="1">
+                                                    <label class="form-check-label" for="cal1">
+                                                        <i class="fas fa-star text-warning"></i> Muy Malo
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="calificacion" id="cal2" value="2">
+                                                    <label class="form-check-label" for="cal2">
+                                                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i> Malo
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="calificacion" id="cal3" value="3">
+                                                    <label class="form-check-label" for="cal3">
+                                                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i> Regular
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="calificacion" id="cal4" value="4">
+                                                    <label class="form-check-label" for="cal4">
+                                                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i> Bueno
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="calificacion" id="cal5" value="5">
+                                                    <label class="form-check-label" for="cal5">
+                                                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i> Excelente
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botones -->
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <button type="reset" class="btn btn-outline-secondary me-3">
+                                                <i class="fas fa-undo me-1"></i>Limpiar Formulario
+                                            </button>
+                                            <button type="submit" class="btn btn-primary-custom btn-lg">
+                                                <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Adicional -->
+                <div class="row mt-5">
+                    <div class="col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                                <h5 class="card-title">Tiempo de Respuesta</h5>
+                                <p class="card-text">Respondemos a todos los mensajes en un plazo máximo de 24 horas hábiles.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                                <h5 class="card-title">Privacidad</h5>
+                                <p class="card-text">Tu información personal es confidencial y solo se usa para responder a tu mensaje.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-phone fa-3x text-warning mb-3"></i>
+                                <h5 class="card-title">Contacto Directo</h5>
+                                <p class="card-text">También puedes llamarnos al +506 2234-5678 para atención inmediata.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Validación del formulario
+                document.querySelector('form').addEventListener('submit', function (e) {
+                    const mensaje = document.getElementById('mensaje').value;
+                    if (mensaje.length < 10) {
+                        e.preventDefault();
+                        alert('El mensaje debe tener al menos 10 caracteres.');
+                        document.getElementById('mensaje').focus();
+                    }
+                });
+
+                // Contador de caracteres para el mensaje
+                document.getElementById('mensaje').addEventListener('input', function () {
+                    const contador = this.value.length;
+                    const minimo = 10;
+
+                    if (contador < minimo) {
+                        this.classList.add('is-invalid');
+                    } else {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    }
+                });
+            </script>
+        </main>
+    </body>
+</html>
